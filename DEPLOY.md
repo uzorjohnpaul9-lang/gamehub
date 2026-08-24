@@ -1,5 +1,14 @@
 # GameHub Deployment Checklist
 
+## Live deployment (2026-08-24)
+
+- **Production URL**: https://gamehub-vh5t.onrender.com
+- **GitHub repo**: https://github.com/uzorjohnpaul9-lang/gamehub
+- **Database**: Supabase, London region (`aws-0-eu-west-2`), 20 games + 4 mods seeded
+- Verified live: health ok/db configured, games API, home checker, /g/gta-v SEO page,
+  sitemap (21 URLs), ads.txt placeholder.
+- Pending: custom domain, AdSense/affiliate IDs, Search Console submission.
+
 ## 1. Push to GitHub
 
 ```powershell

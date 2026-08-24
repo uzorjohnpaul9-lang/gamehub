@@ -12,6 +12,8 @@ const oauthRoutes = require("./routes/oauth.js");
 const giveawaysRoutes = require("./routes/giveaways.js");
 const modsRoutes = require("./routes/mods.js");
 const seoRoutes = require("./routes/seo.js");
+const configRoutes = require("./routes/config.js");
+const billingRoutes = require("./routes/billing.js");
 
 const app = express();
 app.use(express.json());
@@ -31,6 +33,17 @@ app.use("/api/rigs", rigsRoutes);
 app.use("/api/admin", adminRoutes.router);
 app.use("/api/giveaways", giveawaysRoutes);
 app.use("/api/mods", modsRoutes);
+app.use("/api/config", configRoutes);
+app.use("/api/billing", billingRoutes);
+
+app.get("/ads.txt", function (req, res) {
+    const publisherId = process.env.ADSENSE_CLIENT_ID;
+    res.set("Content-Type", "text/plain");
+    if (!publisherId) {
+        return res.send("# AdSense not configured yet.\n# After approval this file will list your publisher account.\n");
+    }
+    return res.send("google.com, " + publisherId.replace(/^ca-/, "") + ", DIRECT, f08c47fec0942fa0\n");
+});
 
 app.use(seoRoutes.router);
 

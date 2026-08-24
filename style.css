@@ -549,3 +549,64 @@ button {
 .seo-links a {
     color: #00bfff;
 }
+
+.ad-slot {
+    max-width: 728px;
+    min-height: 90px;
+    margin: 22px auto;
+    background: rgba(10, 18, 35, 0.5);
+    border: 1px dashed #263b66;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ad-placeholder {
+    color: #3d4f75;
+    font-size: 12px;
+    letter-spacing: 2px;
+}
+
+.plus-btn.is-plus {
+    color: #ffd000;
+    border-color: #ffd000;
+    cursor: default;
+}
+
+.plus-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.plus-modal-box {
+    background: #0a1223;
+    border: 1px solid #ffd000;
+    border-radius: 14px;
+    padding: 26px 30px;
+    max-width: 380px;
+    text-align: center;
+}
+
+.plus-modal-box h3 {
+    color: #ffd000;
+    margin-top: 0;
+}
+
+.plus-modal-box ul {
+    text-align: left;
+    color: #dbeafe;
+    line-height: 1.9;
+    padding-left: 18px;
+}
+
+.plus-price {
+    font-size: 28px;
+    font-weight: bold;
+    color: white;
+}

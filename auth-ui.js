@@ -72,11 +72,81 @@
     function renderLoggedIn(email) {
         box.innerHTML =
             "<span class='acct-email'>" + esc(email) + "</span>" +
+            "<button id='plusBtn' class='acct-btn plus-btn'></button>" +
             "<button id='signOut' class='acct-btn'>Sign out</button>";
         document.getElementById("signOut").addEventListener("click", function () {
             localStorage.removeItem(TOKEN_KEY);
             location.reload();
         });
+
+        fetch("/api/auth/me", { headers: { Authorization: "Bearer " + token() } })
+            .then(function (r) { return r.json(); })
+            .then(function (me) { updatePlusButton(me.plan || "free"); });
+    }
+
+    function updatePlusButton(plan) {
+        const btn = document.getElementById("plusBtn");
+        if (!btn) return;
+
+        if (plan === "plus") {
+            btn.textContent = "\u2605 Plus member";
+            btn.classList.add("is-plus");
+            btn.disabled = true;
+            return;
+        }
+
+        btn.textContent = window.GameHubI18n ?
+            window.GameHubI18n.t("goPlus") : "Go Plus";
+        btn.addEventListener("click", openPlusModal);
+    }
+
+    function openPlusModal() {
+        const cfg = window.GameHubI18n ? window.GameHubI18n.getConfig() : {};
+        const plus = cfg.plus || {};
+        const price = window.GameHubI18n ?
+            window.GameHubI18n.formatUsd(plus.priceUsd || 3) : "$" + (plus.priceUsd || 3);
+
+        let modal = document.getElementById("plusModal");
+        if (modal) modal.remove();
+
+        modal = document.createElement("div");
+        modal.id = "plusModal";
+        modal.className = "plus-modal";
+        const perks = (plus.perks && plus.perks.length) ? plus.perks :
+            ["No ads, forever", "Unlimited cloud rigs", "Price-drop alerts"];
+
+        modal.innerHTML =
+            "<div class='plus-modal-box'>" +
+            "<h3>GameHub Plus</h3>" +
+            "<p class='plus-price'>" + price + "/month</p>" +
+            "<ul>" + perks.map(function (p) { return "<li>" + p + "</li>"; }).join("") + "</ul>" +
+            (plus.enabled ?
+                "<button id='plusCheckout' class='acct-btn'>Subscribe</button>" :
+                "<p class='muted'>Launching soon \u2014 payments are not active yet. Early supporters will get founding-member perks.</p>") +
+            "<button id='plusClose' class='acct-btn'>Close</button>" +
+            "</div>";
+
+        document.body.appendChild(modal);
+        document.getElementById("plusClose").addEventListener("click", function () {
+            modal.remove();
+        });
+
+        const checkout = document.getElementById("plusCheckout");
+        if (checkout) {
+            checkout.addEventListener("click", function () {
+                fetch("/api/billing/checkout", {
+                    method: "POST",
+                    headers: { Authorization: "Bearer " + token() }
+                })
+                    .then(function (r) { return r.json(); })
+                    .then(function (out) {
+                        modal.querySelector(".plus-modal-box h3").after(
+                            Object.assign(document.createElement("p"),
+                                { className: "err", textContent: out.note || out.error })
+                        );
+                    });
+            });
+        }
     }
 
     function showLoggedIn(user) {

@@ -65,8 +65,21 @@ router.post("/login", requireDb, async function (req, res) {
     }
 });
 
-router.get("/me", requireDb, requireAuth, function (req, res) {
-    res.json({ id: req.userId, email: req.userEmail });
+router.get("/me", requireDb, requireAuth, async function (req, res) {
+    try {
+        const result = await db.query(
+            "SELECT id, email, plan FROM users WHERE id = $1",
+            [req.userId]
+        );
+        const user = result.rows[0];
+        return res.json({
+            id: user.id,
+            email: user.email,
+            plan: user.plan || "free"
+        });
+    } catch (err) {
+        return res.json({ id: req.userId, email: req.userEmail, plan: "free" });
+    }
 });
 
 module.exports = router;

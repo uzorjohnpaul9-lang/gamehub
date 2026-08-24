@@ -9,6 +9,7 @@ const gamesRoutes = require("./routes/games.js");
 const rigsRoutes = require("./routes/rigs.js");
 const adminRoutes = require("./routes/admin.js");
 const oauthRoutes = require("./routes/oauth.js");
+const giveawaysRoutes = require("./routes/giveaways.js");
 
 const app = express();
 app.use(express.json());
@@ -26,6 +27,7 @@ app.use("/api/auth", oauthRoutes);
 app.use("/api/games", gamesRoutes);
 app.use("/api/rigs", rigsRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/giveaways", giveawaysRoutes);
 
 app.use("/admin", express.static(path.join(__dirname, "..", "public"), { index: "admin.html" }));
 app.use(express.static(path.join(__dirname, "..", "..")));

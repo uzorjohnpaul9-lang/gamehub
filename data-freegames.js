@@ -1,0 +1,162 @@
+const freeGames = {
+    "Counter-Strike 2": {
+        steamAppId: 730,
+        genre: "FPS",
+        rating: 4,
+        compatibility: "medium",
+        minRam: 8,
+        recRam: 16,
+        minCpu: 22,
+        minGpu: 14,
+        recCpu: 38,
+        recGpu: 24,
+        baseFps: 120
+    },
+    "Dota 2": {
+        steamAppId: 570,
+        genre: "MOBA",
+        rating: 4,
+        compatibility: "easy",
+        minRam: 4,
+        recRam: 8,
+        minCpu: 10,
+        minGpu: 8,
+        recCpu: 26,
+        recGpu: 17,
+        baseFps: 110
+    },
+    "Team Fortress 2": {
+        steamAppId: 440,
+        genre: "FPS",
+        rating: 4,
+        compatibility: "easy",
+        minRam: 4,
+        recRam: 8,
+        minCpu: 8,
+        minGpu: 6,
+        recCpu: 20,
+        recGpu: 12,
+        baseFps: 130
+    },
+    "Warframe": {
+        steamAppId: 230440,
+        genre: "Action RPG",
+        rating: 4,
+        compatibility: "easy",
+        minRam: 4,
+        recRam: 8,
+        minCpu: 12,
+        minGpu: 8,
+        recCpu: 28,
+        recGpu: 18,
+        baseFps: 100
+    },
+    "Destiny 2": {
+        steamAppId: 1085660,
+        genre: "FPS MMO",
+        rating: 4,
+        compatibility: "medium",
+        minRam: 6,
+        recRam: 16,
+        minCpu: 20,
+        minGpu: 13,
+        recCpu: 36,
+        recGpu: 26,
+        baseFps: 90
+    },
+    "Path of Exile": {
+        steamAppId: 238960,
+        genre: "ARPG",
+        rating: 4,
+        compatibility: "easy",
+        minRam: 8,
+        recRam: 16,
+        minCpu: 14,
+        minGpu: 8,
+        recCpu: 30,
+        recGpu: 18,
+        baseFps: 80
+    },
+    "War Thunder": {
+        steamAppId: 236390,
+        genre: "Vehicle Combat",
+        rating: 4,
+        compatibility: "easy",
+        minRam: 4,
+        recRam: 8,
+        minCpu: 10,
+        minGpu: 7,
+        recCpu: 26,
+        recGpu: 17,
+        baseFps: 95
+    },
+    "Lost Ark": {
+        steamAppId: 1599340,
+        genre: "MMO ARPG",
+        rating: 4,
+        compatibility: "easy",
+        minRam: 8,
+        recRam: 16,
+        minCpu: 16,
+        minGpu: 10,
+        recCpu: 32,
+        recGpu: 20,
+        baseFps: 75
+    },
+    "Marvel Rivals": {
+        steamAppId: 2767030,
+        genre: "Hero Shooter",
+        rating: 4,
+        compatibility: "medium",
+        minRam: 8,
+        recRam: 16,
+        minCpu: 22,
+        minGpu: 15,
+        recCpu: 40,
+        recGpu: 30,
+        baseFps: 85
+    },
+    "THE FINALS": {
+        steamAppId: 2073850,
+        genre: "FPS",
+        rating: 4,
+        compatibility: "hard",
+        minRam: 12,
+        recRam: 16,
+        minCpu: 28,
+        minGpu: 18,
+        recCpu: 45,
+        recGpu: 34,
+        baseFps: 80
+    },
+    "Paladins": {
+        steamAppId: 444090,
+        genre: "Hero Shooter",
+        rating: 3,
+        compatibility: "easy",
+        minRam: 4,
+        recRam: 8,
+        minCpu: 8,
+        minGpu: 6,
+        recCpu: 22,
+        recGpu: 13,
+        baseFps: 100
+    },
+    "Brawlhalla": {
+        steamAppId: 291550,
+        genre: "Fighting",
+        rating: 4,
+        compatibility: "easy",
+        minRam: 2,
+        recRam: 4,
+        minCpu: 5,
+        minGpu: 4,
+        recCpu: 12,
+        recGpu: 8,
+        baseFps: 140
+    }
+};
+
+if (typeof module !== "undefined") {
+    module.exports = { freeGames: freeGames };
+}

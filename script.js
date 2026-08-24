@@ -66,6 +66,22 @@ async function loadGamesFromApi() {
         const list = Array.isArray(payload) ? payload : payload.games;
         if (!Array.isArray(list) || !list.length) return;
 
+        window.__freeGamesList = list.filter(function (g) {
+            return g && g.isFree && typeof g.recCpu === "number";
+        }).map(function (g) {
+            return {
+                title: g.title,
+                genre: g.genre || null,
+                steamAppId: g.steamAppId,
+                rating: g.rating || 4,
+                compatibility: g.compatibility || "medium",
+                minRam: g.minRam, recRam: g.recRam,
+                minCpu: g.minCpu, minGpu: g.minGpu,
+                recCpu: g.recCpu, recGpu: g.recGpu,
+                baseFps: g.baseFps || 50
+            };
+        });
+
         Object.keys(games).forEach(function (key) { delete games[key]; });
 
         list.forEach(function (g) {
@@ -93,6 +109,8 @@ async function init() {
 
     renderGameOptions();
     renderGameCards();
+    renderFreeGames();
+    renderGiveaways();
 
     const gameCards = document.querySelectorAll(".game-card");
 
@@ -339,6 +357,98 @@ function savedRigRam(rig) {
     return rig && rig.ram ? rig.ram : "?";
 }
 
+function freeGameVerdictChip(game, rigData) {
+    if (!rigData) {
+        return "<span class='tier-chip tier-neutral'>Check your PC above</span>";
+    }
+    const verdict = computeVerdict(game, rigData);
+    return "<span class='tier-chip " + verdict.tierClass + "'>" +
+        escapeHtml(verdict.tierLabel) + "</span>";
+}
+
+function renderFreeGames() {
+    const grid = document.getElementById("freeGrid");
+    if (!grid) return;
+
+    const rig = loadRig();
+    const rigData = (rig && cpus[rig.cpu] && gpus[rig.gpu]) ? {
+        cpuScore: cpus[rig.cpu],
+        gpuScore: gpus[rig.gpu],
+        ram: rig.ram
+    } : null;
+
+    let source = null;
+    if (typeof window !== "undefined" && Array.isArray(window.__freeGamesList)) {
+        source = window.__freeGamesList;
+    } else if (typeof freeGames !== "undefined") {
+        source = Object.keys(freeGames).map(function (name) {
+            const g = freeGames[name];
+            return Object.assign({ title: name }, g);
+        });
+    }
+
+    if (!source || !source.length) return;
+
+    grid.innerHTML = source.map(function (g) {
+        return "<div class='rig-card free-card'>" +
+            "<h4>" + escapeHtml(g.title) + "</h4>" +
+            "<span class='genre-tag'>" + escapeHtml(g.genre || "Free game") + "</span>" +
+            freeGameVerdictChip(g, rigData) +
+            (g.steamAppId ?
+                "<a class='store-link' target='_blank' rel='noopener' href='https://store.steampowered.com/app/" +
+                Number(g.steamAppId) + "'>Get on Steam</a>" : "") +
+            "</div>";
+    }).join("");
+
+    if (!rigData) {
+        if (!document.getElementById("freeRigHint")) {
+            const hint = document.createElement("p");
+            hint.id = "freeRigHint";
+            hint.className = "muted";
+            hint.textContent =
+                "Save your PC specs above and every card shows a personal verdict.";
+            grid.parentNode.insertBefore(hint, grid);
+        }
+    } else {
+        const oldHint = document.getElementById("freeRigHint");
+        if (oldHint) oldHint.remove();
+    }
+}
+
+async function renderGiveaways() {
+    const grid = document.getElementById("giveawayGrid");
+    if (!grid) return;
+
+    grid.innerHTML = "<p class='muted'>Loading giveaways...</p>";
+
+    try {
+        const base = window.GAMEHUB_API_URL || "";
+        const res = await fetch(base + "/api/giveaways");
+        const payload = await res.json();
+        const list = Array.isArray(payload.giveaways) ? payload.giveaways : [];
+
+        if (!list.length) {
+            grid.innerHTML = "<p class='muted'>No giveaways right now - check back soon.</p>";
+            return;
+        }
+
+        grid.innerHTML = list.map(function (g) {
+            return "<div class='rig-card giveaway-card'>" +
+                (g.image ? "<img class='giveaway-img' src='" + encodeURI(g.image) +
+                    "' alt='' loading='lazy'>" : "") +
+                "<h4>" + escapeHtml(g.title) + "</h4>" +
+                "<span class='genre-tag'>" + escapeHtml(g.worth === "$0" ? "Free" : g.worth || "Free") +
+                "</span><span class='tier-chip tier-high'>Giveaway</span>" +
+                (g.openGiveawayUrl ?
+                    "<a class='store-link' target='_blank' rel='sponsored noopener noreferrer' href='" +
+                    encodeURI(g.openGiveawayUrl) + "'>Claim it</a>" : "") +
+                "</div>";
+        }).join("");
+    } catch (e) {
+        grid.innerHTML = "<p class='muted'>Giveaways unavailable offline.</p>";
+    }
+}
+
 gamesGrid.addEventListener("click", function (event) {
 
     const button = event.target.closest(".view-game");
@@ -366,5 +476,8 @@ gamesGrid.addEventListener("click", function (event) {
         "<p><strong>Recommended:</strong> " + game.recRam + " GB RAM, CPU level " +
         game.recCpu + ", GPU level " + game.recGpu + "</p>" +
         "<p><strong>Reference performance:</strong> ~" + game.baseFps +
-        " FPS at 1080p on recommended hardware</p>";
+        " FPS at 1080p on recommended hardware</p>" +
+        (window.GameHubAffiliate ?
+            "<div class='store-links-row'><span class='store-links-label'>Compare prices:</span>" +
+            window.GameHubAffiliate.renderStoreLinks(gameName) + "</div>" : "");
 });

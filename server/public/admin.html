@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameHub - Draft Review</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #080b14; color: #e2e8f0; margin: 0; padding: 30px; }
+        h1 { color: #00bfff; }
+        .card { background: rgba(10,18,35,.9); border: 1px solid #263b66; border-radius: 12px; padding: 20px; margin-bottom: 20px; max-width: 860px; }
+        table { border-collapse: collapse; width: 100%; }
+        td { padding: 6px 10px; vertical-align: top; }
+        td:first-child { color: #8fa3c8; width: 160px; }
+        input { background: #111827; color: white; border: 1px solid #263b66; border-radius: 6px; padding: 6px 8px; width: 110px; }
+        input.wide { width: 300px; }
+        button { padding: 8px 16px; margin-right: 8px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
+        .approve { background: #0066ff; color: white; font-weight: bold; }
+        .save { background: #333; color: white; }
+        .warn { color: #ffd000; font-size: 13px; }
+        .err { color: #ff3030; }
+        .ok { color: #00ff88; }
+        #keybox, #content { max-width: 900px; margin: 0 auto; }
+        #keyinput { width: 260px; }
+        a { color: #00bfff; }
+    </style>
+</head>
+<body>
+    <div id="keybox">
+        <h1>GameHub Draft Review</h1>
+        <p>Enter the admin key (ADMIN_KEY in server/.env):</p>
+        <input id="keyinput" type="password" placeholder="admin key">
+        <button class="save" onclick="loadDrafts()">Unlock</button>
+        <p id="keymsg" class="err"></p>
+        <p><a href="/">Back to GameHub</a></p>
+    </div>
+    <div id="content"></div>
+
+    <script>
+        var KEY = sessionStorage.getItem("gh-admin-key") || "";
+
+        function headers() {
+            return { "Content-Type": "application/json", "Authorization": "Bearer " + KEY };
+        }
+
+        function esc(s) {
+            var d = document.createElement("div");
+            d.textContent = s == null ? "" : String(s);
+            return d.innerHTML;
+        }
+
+        function loadDrafts() {
+            KEY = document.getElementById("keyinput").value.trim() || KEY;
+            fetch("/api/admin/drafts", { headers: headers() })
+                .then(function (r) {
+                    if (r.status === 403) throw new Error("Invalid admin key");
+                    if (r.status === 503) throw new Error("Admin disabled - set ADMIN_KEY in server/.env");
+                    return r.json();
+                })
+                .then(function (data) {
+                    sessionStorage.setItem("gh-admin-key", KEY);
+                    render(data.drafts);
+                })
+                .catch(function (e) {
+                    document.getElementById("keymsg").textContent = e.message;
+                });
+        }
+
+        function row(label, field, value) {
+            return "<tr><td>" + label + "</td><td>" +
+                "<input data-field='" + field + "' value='" + esc(value) + "'>" +
+                "</td></tr>";
+        }
+
+        function render(drafts) {
+            var box = document.getElementById("content");
+            box.innerHTML = "";
+            if (!drafts.length) {
+                box.innerHTML = "<p class='ok'>No drafts waiting for review. Import some with:<br><code>node server/tools/import-game.js &lt;steamAppId&gt;</code></p>";
+                return;
+            }
+
+            drafts.forEach(function (d) {
+                var html = "<div class='card'><h2>" + esc(d.title) +
+                    " <small style='color:#8fa3c8'>(" + esc(d.steamAppId) + ")</small></h2>";
+
+                if (d.status === "corrupt") {
+                    html += "<p class='err'>This draft file is corrupt JSON.</p></div>";
+                    box.innerHTML += html;
+                    return;
+                }
+
+                html += "<table>" +
+                    row("Title", "title", d.title) +
+                    row("Rating", "rating", d.rating) +
+                    row("Min RAM (GB)", "minRam", d.minRam) +
+                    row("Rec RAM (GB)", "recRam", d.recRam) +
+                    row("Min CPU score", "minCpu", d.minCpu) +
+                    row("Min GPU score", "minGpu", d.minGpu) +
+                    row("Rec CPU score", "recCpu", d.recCpu) +
+                    row("Rec GPU score", "recGpu", d.recGpu) +
+                    row("Base FPS", "baseFps", d.baseFps) +
+                    "</table>";
+
+                if (d.warnings && d.warnings.length) {
+                    html += "<p class='warn'>Parser warnings:<br>" +
+                        d.warnings.map(esc).join("<br>") + "</p>";
+                }
+
+                html += "<button class='save' onclick='send(\"" + d.steamAppId + "\",\"save\")'>Save edits</button>" +
+                    "<button class='approve' onclick='send(\"" + d.steamAppId + "\",\"approve\")'>Approve &amp; publish</button>" +
+                    "<p class='result' id='res-" + d.steamAppId + "'></p></div>";
+
+                box.innerHTML += html;
+            });
+        }
+
+        function send(appId, action) {
+            var fields = {};
+            document.querySelectorAll("[data-field]").forEach(function (inp) {
+                var v = inp.value.trim();
+                if (v !== "") {
+                    var n = Number(v);
+                    fields[inp.getAttribute("data-field")] =
+                        isNaN(n) || v === "" ? v : n;
+                } else {
+                    fields[inp.getAttribute("data-field")] = null;
+                }
+            });
+
+            var resBox = document.getElementById("res-" + appId);
+            resBox.className = "";
+            resBox.textContent = "Working...";
+
+            fetch("/api/admin/drafts/" + appId, {
+                method: "POST",
+                headers: headers(),
+                body: JSON.stringify({ action: action, fields: fields })
+            })
+                .then(function (r) { return r.json().then(function (j) { return { status: r.status, body: j }; }); })
+                .then(function (out) {
+                    if (out.status >= 400) {
+                        resBox.className = "err";
+                        resBox.textContent = (out.body.errors || ["Failed"]).join(" | ");
+                        return;
+                    }
+                    if (action === "approve") {
+                        resBox.className = "ok";
+                        resBox.textContent = "Approved: " + out.body.title +
+                            (out.body.persistedToDb ? " (saved to database)" :
+                            " (marked approved locally - will publish when database is connected)");
+                        setTimeout(loadDrafts, 1200);
+                    } else {
+                        resBox.className = "ok";
+                        resBox.textContent = "Saved.";
+                    }
+                })
+                .catch(function (e) {
+                    resBox.className = "err";
+                    resBox.textContent = e.message;
+                });
+        }
+
+        if (KEY) {
+            document.getElementById("keyinput").value = KEY;
+            loadDrafts();
+        }
+    </script>
+</body>
+</html>

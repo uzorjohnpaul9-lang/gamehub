@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameHub - Signed in</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1 style="margin-top:150px">Sign-in complete</h1>
+    <p id="msg">Finishing up...</p>
+    <p><a href="/" style="color:#00bfff">Back to GameHub</a></p>
+
+    <script>
+        (function () {
+            var msg = document.getElementById("msg");
+            var hash = location.hash || "";
+            var match = hash.match(/token=([^&]+)/);
+
+            if (!match) {
+                msg.textContent = "No sign-in token found. Please try signing in again.";
+                return;
+            }
+
+            localStorage.setItem("gamehub-token", decodeURIComponent(match[1]));
+            history.replaceState(null, "", "/auth.html");
+
+            fetch("/api/auth/me", {
+                headers: { Authorization: "Bearer " + localStorage.getItem("gamehub-token") }
+            })
+                .then(function (r) { return r.json(); })
+                .then(function (me) {
+                    msg.textContent = "Welcome, " + (me.email || "gamer") + "!";
+                })
+                .catch(function () {
+                    msg.textContent = "Signed in.";
+                });
+        })();
+    </script>
+</body>
+</html>

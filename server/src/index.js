@@ -7,6 +7,8 @@ const db = require("./db.js");
 const authRoutes = require("./routes/auth.js");
 const gamesRoutes = require("./routes/games.js");
 const rigsRoutes = require("./routes/rigs.js");
+const adminRoutes = require("./routes/admin.js");
+const oauthRoutes = require("./routes/oauth.js");
 
 const app = express();
 app.use(express.json());
@@ -20,9 +22,12 @@ app.get("/api/health", function (req, res) {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/auth", oauthRoutes);
 app.use("/api/games", gamesRoutes);
 app.use("/api/rigs", rigsRoutes);
+app.use("/api/admin", adminRoutes);
 
+app.use("/admin", express.static(path.join(__dirname, "..", "public"), { index: "admin.html" }));
 app.use(express.static(path.join(__dirname, "..", "..")));
 
 app.use(function (req, res) {

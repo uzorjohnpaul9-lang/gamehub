@@ -2,8 +2,13 @@ CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     email TEXT NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
+    provider TEXT NOT NULL DEFAULT 'password',
+    oauth_sub TEXT UNIQUE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+ALTER TABLE users ADD COLUMN IF NOT EXISTS provider TEXT NOT NULL DEFAULT 'password';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS oauth_sub TEXT UNIQUE;
 
 CREATE TABLE IF NOT EXISTS games (
     id SERIAL PRIMARY KEY,

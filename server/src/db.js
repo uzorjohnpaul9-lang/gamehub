@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("dotenv").config({ path: require("path").join(__dirname, "..", ".env") });
 
 let pool = null;
 const isDbConfigured = Boolean(process.env.DATABASE_URL);

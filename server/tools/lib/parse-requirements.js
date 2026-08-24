@@ -162,6 +162,7 @@ function createParser(cpus, gpus) {
 if (typeof module !== "undefined") {
     module.exports = {
         createParser: createParser,
+        buildMatcher: buildMatcher,
         stripHtml: stripHtml,
         normalizeName: normalizeName,
         splitRequirementSections: splitRequirementSections,

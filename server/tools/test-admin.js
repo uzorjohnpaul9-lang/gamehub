@@ -1,5 +1,6 @@
 process.env.ADMIN_KEY = "test-admin-key-123";
 process.env.AUTH_SECRET = "test-secret";
+process.env.DATABASE_URL = "";
 
 const path = require("path");
 const fs = require("fs");

@@ -1,18 +1,30 @@
 const express = require("express");
 const db = require("../db.js");
 const hardware = require("../../../data-hardware.js");
+const { buildMatcher } = require("../../tools/lib/parse-requirements.js");
 const { requireAuth, requireDb } = require("../auth.js");
 
 const router = express.Router();
 
+const matchCpu = buildMatcher(hardware.cpus);
+const matchGpu = buildMatcher(hardware.gpus);
+
+function resolveHardwareName(input, matcher, catalog) {
+    const raw = String(input || "").trim();
+    if (!raw) return null;
+    if (Object.prototype.hasOwnProperty.call(catalog, raw)) return raw;
+    const match = matcher(raw);
+    return match.confidence === "none" ? null : match.name;
+}
+
 function validateRig(body) {
     const name = String(body.name || "My PC").trim().slice(0, 60) || "My PC";
-    const cpu = String(body.cpu || "").trim();
-    const gpu = String(body.gpu || "").trim();
+    const cpu = resolveHardwareName(body.cpu, matchCpu, hardware.cpus);
+    const gpu = resolveHardwareName(body.gpu, matchGpu, hardware.gpus);
     const ram = Number(body.ram);
 
-    if (!hardware.cpus[cpu]) return { error: "Unknown CPU: " + cpu };
-    if (!hardware.gpus[gpu]) return { error: "Unknown GPU: " + gpu };
+    if (!cpu) return { error: "Unknown CPU: " + body.cpu };
+    if (!gpu) return { error: "Unknown GPU: " + body.gpu };
     if (!Number.isInteger(ram) || ram < 1 || ram > 128) {
         return { error: "RAM must be a whole number of GB between 1 and 128" };
     }

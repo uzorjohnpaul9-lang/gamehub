@@ -1,4 +1,6 @@
-require("dotenv").config();
+require("dotenv").config({ path: require("path").join(__dirname, "..", ".env") });
+const fs = require("fs");
+const path = require("path");
 
 const db = require("../src/db.js");
 const bundled = require("../../data-games.js");
@@ -8,6 +10,10 @@ async function seed() {
         console.error("DATABASE_URL is not set. Add it to server/.env first.");
         process.exit(1);
     }
+
+    const schema = fs.readFileSync(path.join(__dirname, "..", "src", "schema.sql"), "utf8");
+    await db.query(schema);
+    console.log("Schema applied (tables ensured).");
 
     const titles = Object.keys(bundled.games);
     let inserted = 0;

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameHub</title>
+    <link rel="stylesheet" href="style.css"
+</head>
+
+<body>
+    <h1>Welcome to GameHub</h1>
+
+    <p>Find out which games your PC can run.</p>
+
+    <input type="text" id="gameSearch" placeholder="search for a game...">
+
+    <br><br>
+
+    <button>Check My PC</button>
+    <button>Browse Games</button>
+
+    <h2>Check Your PC</h2>
+
+    <div class="pc-checker">
+
+        <select id="gameSelect">
+            <option value="">Select a game</option>
+            <option value="GTA V">GTA V</option>
+            <option value="Far Cry 3">Far Cry 3</option>
+            <option value="Tomb Raider">Tomb Raider</option>
+            <option value="Need for Speed: Most Wanted">Need for Speed: Most Wanted</option>
+            <option value="GTA IV">GTA IV</option>
+            <option value="Far Cry 4">Far Cry 4</option>
+            <option value="Mafia II">Mafia II</option>
+            <option value="Sleeping Dogs">Sleeping Dogs</option>
+            <option value="Tomb Raider (2013)">Tomb Raider (2013)</option>
+        </select>
+        
+        <select id="cpuSelect">
+            <option value="">Select your CPU</option>
+            <option value="A8-7100">AMD A8-7100</option>
+            <option value="Core 2 Duo">Intel Core 2 Duo</option>
+            <option value="Intel Core i3">Intel Core i3</option>
+            <option value="Intel Core i5">Intel Core i5</option>
+            <option value="Intel Core i7">Intel Core i7</option>
+            <option value="AMD Ryzen 3">AMD Ryzen 3</option>
+            <option value="AMD Ryzen 5">AMD Ryzen 5</option>
+            <option value="AMD Ryzen 7">AMD Ryzen 7</option>
+            <option value="AMD Ryzen 9">AMD Ryzen 9</option>
+            <option value="Intel Core i9">Intel Core i9</option>
+        </select>
+
+        <input type="text" id="ram" inputmode="numeric" pattern="[0-9]*" placeholder="RAM in GB">
+
+        <select id="gpuSelect">
+            <option value="">Select your GPU</option>
+            <option value="Radeon R5">AMD Radeon R5</option>
+            <option value="GT 1030">NVIDIA GT 1030</option>
+            <option value="GTX 750">NVIDIA GTX 750</option>
+            <option value="GTX 1050">NVIDIA GTX 1050</option>
+            <option value="GTX 1060">NVIDIA GTX 1060</option>
+            <option value="GTX 1660">NVIDIA GTX 1660</option>
+            <option value="RTX 2060">NVIDIA RTX 2060</option>
+            <option value="GTX 750 Ti">NVIDIA GTX 750 Ti</option>
+            <option value="RTX 3060">NVIDIA RTX 3060</option>
+            <option value="RTX 3070">NVIDIA RTX 3070</option>
+            <option value="RTX 4060">NVIDIA RTX 4060</option>
+        </select>
+
+        <button id="checkPC">Check Compatibility</button>
+        
+        <p id="result"></p>
+        <div id="gameDetails" class="game-details"></div>
+
+    </div>
+    
+    <h2>Featured Games</h2>
+
+    <div class="games">
+        <div class="game-card">
+            <h3>Grand Theft Auto V</h3>
+            <p>Rating: 4.8/5</p>
+            <p class="medium">Compatibility: ⚠ Medium</p>
+            <button class="view-game" data-game="GTA V">View Game</button>
+        </div>
+
+        <div class="game-card">
+            <h3>Need for Speed: Most Wanted</h3>
+            <p>Rating: 4.6/5</p>
+            <p class="easy">Compatibility: ✔Easy</p>
+            <button>View Game</button>
+        </div>    
+        
+        <div class="game-card">
+            <h3>Tomb Raider</h3>
+            <p>Rating: 4.7/5</p>
+            <p class="easy">Compatibility: ✔Easy</p>
+            <button>View Game</button>
+        </div>
+
+        <div class="game-card">
+            <h3>Far Cry 3</h3>
+            <p>Rating: 4.2/5</p>
+            <p class="easy">Compatibility: ✔Easy</p>
+            <button>View Game</button>
+        </div>
+
+        <div class="game-card">
+            <h3>GTA IV</h3>
+            <p>Rating: 4.5/5</p>
+            <p class="medium">Compatibility: ⚠ Medium</p>
+            <button>View Game</button>
+        </div>
+
+        <div class="game-card">
+            <h3>Far Cry 4</h3>
+            <p>Rating: 4.3/5</p>
+            <p class="medium">Compatibility: ⚠ Medium</p>
+            <button>View Game</button>
+        </div>
+
+        <div class="game-card">
+            <h3>Mafia II</h3>
+            <p>Rating: 4.1/5</p>
+            <p class="easy">Compatibility: ✔Easy</p>
+            <button>View Game</button>
+        </div>
+
+        <div class="game-card">
+            <h3>Sleeping Dogs</h3>
+            <p>Rating: 4.4/5</p>
+            <p class="easy">Compatibility: ✔Easy</p>
+            <button>View Game</button>
+        </div>
+
+        <div class="game-card">
+            <h3>Tomb Raider (2013)</h3>
+            <p>Rating: 4.7/5</p>
+            <p class="easy">Compatibility: ✔Easy</p>
+            <button>View Game</button>
+        </div>
+    </div> 
+
+    <script src="script.js"></script>
+
+</body>
+</html>

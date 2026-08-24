@@ -1,0 +1,325 @@
+body{
+    background-color: #111;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+}
+h1 {
+    font-size: 50px;
+    margin-top: 100px;
+}
+p {
+font-size: 20px;
+color: #bbb;
+}
+input{
+    width: 300px;
+    padding: 15px;
+    margin-top: 30px;
+    border-radius: 8px;
+    border: none;
+    font-size: 16px;
+}
+button{
+    padding: 14px 25px;
+    margin: 10px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+}
+h2{
+    margin-top: 80px;
+    font-size: 35px;
+}
+.games{
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+.game-card{
+    background-color: #1c1c1c;
+    width: 250px;
+    padding: 25px;
+    border-radius: 12px;
+    transition: 0.3s, box-shadow 0.3s;
+
+}
+.game-card:hover{
+    transform: translateY(-10px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+.game-card button{
+    background-color: #333;
+    color: white;
+}
+.game-card button:hover{
+    background-color: #555;
+}
+.game-card h3{
+    font-size: 22px;
+}
+.game-card p{
+    font-size: 16px;
+}
+.pc-checker{
+    margin-top: 30px;
+}
+.pc-checker input{
+    margin: 8px;
+}
+#checkPC{
+    background-color: #333;
+    color: white;
+    cursor: pointer;
+}
+#checkPC:hover{
+    background-color: #555;
+}
+#result{
+    margin-top: 20px;
+    font-size: 20px;
+}
+#result {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 16px;
+    line-height: 1.8;
+}
+.not-recommended {
+    color: red;
+}
+
+.playable {
+    color: orange;
+}
+
+.good {
+    color: green;
+}
+
+.pc-checker select{
+    width: 100%;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    border: 1px solid #555;
+    color: white;
+    background:#222;
+    font-size: 16px;
+    cursor: pointer;
+    outline: none;
+}
+
+.pc-checker select:focus{
+    border-color: #00bfff;
+    box-shadow: 0 0 8px rgba(0, 191, 255, 0.5);
+}
+
+.pc-checker select option{
+    background-color: #222;
+    color: white;
+}
+
+body {
+    background: radial-gradient(circle at 20% 20%, rgba(0, 140, 225, 0.15), transparent 50%), radial-gradient(circle at 80% 80%, rgba(255, 0, 150, 0.15), transparent 30%), radial-gradient(circle at 80% 80%, rgba(130, 0, 225,0.15), transparent 30%), radial-gradient(circle at 20% 20%, rgba(0, 255, 140, 0.15), transparent 30%), #080b14;
+    color: white;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/*Repeating GH watermark*/
+body::before {
+    content: "GH 🎮 ✖ 🔼 ◼ ⚫ GH 🎮 ✖ 🔼 ◼ ⚫ GH 🎮 ✖ 🔼 ◼ ⚫";
+    position: fixed;
+    top: 0;
+    left: -10%;
+    width: 120%;
+    height: 120%;
+    font-size: 65px;
+    font-weight: bold;
+    letter-spacing: 38px;
+    line-height: 150px;
+    color: rgba(80, 170, 255, 0.12);
+    transform: rotate(-25deg);
+    pointer-events: none;
+    z-index: 0;
+    white-space: normal;
+}
+
+body>* {
+    position: relative;
+    z-index: 1;
+}
+
+.pc-checker select  {
+    width: 100%;
+    height: 45px;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.pc-checker select {
+    background-color: #111827;
+    color: white;
+    border: 1px solid #263b66;
+    border-radius: 10px;
+    transition: 0.3s ease;
+}
+
+.pc-checker select:hover {
+    border-color: #00bfff;
+}
+
+.pc-checker select:focus {
+    border-color: #00bfff;
+    box-shadow: 0 0 10px rgba(0, 191, 255, 0.35);
+}
+
+.pc-checker input[type="text"]{
+    width: 100%;
+    height: 45px;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+    background: #111827;
+    color: white;
+    border: 1 px solid #263b66;
+    border-radius: 10px;
+    font-size: 16px;
+    outline: none;
+    transition: 0.3s ease;
+}
+
+.pc-checker input[type="text"]:focus {
+    border-color: #00bfff;
+    box-shadow: 0 0 10px rgba(0, 191, 255, 0.35);
+}
+
+#checkPC {
+    width: 100%;
+    padding: 12px;
+    margin-top: 5px;
+    border: none;
+    border-radius: 10px;
+    background: #0066ff;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+#checkPC:hover {
+    background: #008cff;
+    box-shadow: 0 0 15px rgba(0, 191, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+#checkPC:active {
+    transform: translateY(0);
+}
+
+#result {
+    margin-top: 18px;
+    padding: 15px;
+    border-radius: 10px;
+    background: rgba(10, 18, 35, 0.9);
+    border: 1px solid #263b66;
+    line-height: 1.8;
+    font-size: 16px;
+    text-align: center;
+}
+
+.good {
+    color: #00ff88;
+    text-shadow: 0 0 8px rgba(0, 255, 136, 0.5)
+}
+
+.playable {
+    color: #ffd000;
+    text-shadow: 0 0 8px rgba(255, 208, 0, 0.5);
+}
+
+.not-recommended {
+    color: #ff3030;
+    text-shadow: 0 0 8px rgba(255, 48, 48, 0.5);
+}
+
+#result
+strong:not(.good):not(.playable):not(.not-recommended) {
+    color: #00bfff;
+}
+
+.game-card {
+    background: rgba(10, 18, 35, 0.9);
+    border: 1px solid #263b66;
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 15px;
+    transition: 0.3s ease;
+}
+
+.game-card:hover {
+    transform: translateY(-5px);
+    border-color: #00bfff;
+    box-shadow: 0 0 18px rgba(0, 191, 255, 0.3);
+}
+
+.game-card h3 {
+    color: white;
+    margin-top: 0;
+}
+
+.game-card p {
+    color: #cbd5e1;
+}
+
+.game-card:hover h3 {
+    color: #00bfff;
+}
+
+.game-card p:last-of-type {
+    font-weight: bold;
+}
+
+.game-card p:last-of-type::first-letter {
+    color: #00ff88;
+}
+
+.easy {
+    color: #00ff88 !important;
+    font-weight: bold;
+    text-shadow: 0 0 6px rgba(0, 255, 136, 0.4);
+}
+
+.medium {
+    color: #ffd000 !important;
+    font-weight: bold;
+    text-shadow: 0 0 6px rgba(255, 208, 0, 0.4);
+}
+
+.game-details {
+    display: none;
+    margin-top: 20px;
+    padding: 20px;
+    background: rgba(8, 15, 30, 0.95);
+    border: 1px solid #00bfff;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0, 191, 255, 0.25);
+}
+
+.game-details h3 {
+    color: #00bfff;
+    margin-top: 0;
+}
+
+.game-details p {
+    color: #dbeafe;
+    line-height: 1.6;
+}

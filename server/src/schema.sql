@@ -42,3 +42,26 @@ CREATE TABLE IF NOT EXISTS rigs (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     UNIQUE (user_id, name)
 );
+
+CREATE TABLE IF NOT EXISTS mods (
+    id SERIAL PRIMARY KEY,
+    game_title TEXT NOT NULL,
+    name TEXT NOT NULL,
+    author TEXT,
+    version TEXT,
+    url TEXT,
+    description TEXT,
+    ram_add_gb INTEGER NOT NULL DEFAULT 0 CHECK (ram_add_gb >= 0 AND ram_add_gb <= 64),
+    cpu_multiplier REAL NOT NULL DEFAULT 1.0 CHECK (cpu_multiplier >= 1.0 AND cpu_multiplier <= 4.0),
+    gpu_multiplier REAL NOT NULL DEFAULT 1.0 CHECK (gpu_multiplier >= 1.0 AND gpu_multiplier <= 4.0),
+    fps_multiplier REAL NOT NULL DEFAULT 1.0 CHECK (fps_multiplier > 0.05 AND fps_multiplier <= 1.0),
+    sha256_checksum TEXT,
+    file_size_mb REAL,
+    vt_status TEXT NOT NULL DEFAULT 'pending' CHECK (vt_status IN ('pending','clean','flagged')),
+    vt_report_url TEXT,
+    last_scanned_at TIMESTAMPTZ,
+    status TEXT NOT NULL DEFAULT 'live' CHECK (status IN ('draft','live')),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    UNIQUE (game_title, name)
+);

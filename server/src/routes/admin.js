@@ -88,4 +88,4 @@ router.post("/drafts/:appId", requireAdminKey, function (req, res) {
     return res.status(400).json({ errors: ["Unknown action: " + action] });
 });
 
-module.exports = router;
+module.exports = { router: router, requireAdminKey: requireAdminKey };

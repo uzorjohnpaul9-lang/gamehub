@@ -111,6 +111,7 @@ async function init() {
     renderGameCards();
     renderFreeGames();
     renderGiveaways();
+    renderMods();
 
     const gameCards = document.querySelectorAll(".game-card");
 
@@ -448,6 +449,115 @@ async function renderGiveaways() {
         grid.innerHTML = "<p class='muted'>Giveaways unavailable offline.</p>";
     }
 }
+
+let allModsCache = [];
+
+function vtBadge(mod) {
+    if (mod.vtStatus === "clean") {
+        return "<span class='vt-chip vt-clean'>\u2714 Scan: clean</span>";
+    }
+    if (mod.vtStatus === "flagged") {
+        return "<span class='vt-chip vt-flagged'>\u26a0 Scan: flagged</span>";
+    }
+    return "<span class='vt-chip vt-pending'>Scan pending</span>";
+}
+
+function modCard(mod, rigData) {
+    const game = games[mod.gameTitle];
+    let verdictHtml = "";
+
+    if (game && typeof ModsCore !== "undefined") {
+        const moddedGame = ModsCore.applyModToGame(game, mod);
+        if (!rigData) {
+            verdictHtml = "<span class='tier-chip tier-neutral'>Check your PC above</span>";
+        } else {
+            const withMod = computeVerdict(moddedGame, rigData);
+            const withoutMod = computeVerdict(game, rigData);
+            const label = withMod.tierLabel;
+            let delta = "";
+            if (withMod.tier !== withoutMod.tier) {
+                delta = " <small>(base game: " + escapeHtml(withoutMod.tierLabel) + ")</small>";
+            }
+            verdictHtml =
+                "<span class='tier-chip " + withMod.tierClass + "'>" +
+                escapeHtml(label) + "</span>" + delta +
+                "<p class='fps-line'>" + ModsCore.describeImpact(mod) + "</p>";
+        }
+    } else {
+        verdictHtml = "<p class='fps-line muted'>" +
+            (typeof ModsCore !== "undefined" ?
+                ModsCore.describeImpact(mod) : "requirements info coming soon") + "</p>";
+    }
+
+    return "<div class='rig-card mod-card'>" +
+        "<h4>" + escapeHtml(mod.name) + "</h4>" +
+        "<span class='genre-tag'>for " + escapeHtml(mod.gameTitle) + "</span>" +
+        vtBadge(mod) +
+        verdictHtml +
+        (mod.url ? "<a class='store-link' target='_blank' rel='noopener nofollow' href='" +
+            encodeURI(mod.url) + "'>Get the mod</a>" : "") +
+        "</div>";
+}
+
+async function renderMods() {
+    const grid = document.getElementById("modsGrid");
+    const filterSelect = document.getElementById("modGameFilter");
+    if (!grid) return;
+
+    grid.innerHTML = "<p class='muted'>Loading mods...</p>";
+
+    try {
+        const base = window.GAMEHUB_API_URL || "";
+        const res = await fetch(base + "/api/mods");
+        if (!res.ok) {
+            grid.innerHTML = "<p class='muted'>Mods hub needs the server running.</p>";
+            return;
+        }
+        const payload = await res.json();
+        allModsCache = Array.isArray(payload.mods) ? payload.mods : [];
+    } catch (e) {
+        allModsCache = [];
+    }
+
+    const gameTitles = [];
+    allModsCache.forEach(function (m) {
+        if (gameTitles.indexOf(m.gameTitle) === -1) gameTitles.push(m.gameTitle);
+    });
+
+    filterSelect.innerHTML = "<option value=''>All games</option>" +
+        gameTitles.map(function (t) {
+            return "<option value='" + escapeHtml(t) + "'>" + escapeHtml(t) + "</option>";
+        }).join("");
+
+    drawMods();
+}
+
+function drawMods() {
+    const grid = document.getElementById("modsGrid");
+    const filter = document.getElementById("modGameFilter").value;
+
+    const rig = loadRig();
+    const rigData = (rig && cpus[rig.cpu] && gpus[rig.gpu]) ? {
+        cpuScore: cpus[rig.cpu],
+        gpuScore: gpus[rig.gpu],
+        ram: rig.ram
+    } : null;
+
+    const visible = filter ?
+        allModsCache.filter(function (m) { return m.gameTitle === filter; }) :
+        allModsCache;
+
+    if (!visible.length) {
+        grid.innerHTML = "<p class='muted'>No mods listed for this selection yet.</p>";
+        return;
+    }
+
+    grid.innerHTML = visible.map(function (m) {
+        return modCard(m, rigData);
+    }).join("");
+}
+
+document.getElementById("modGameFilter").addEventListener("change", drawMods);
 
 gamesGrid.addEventListener("click", function (event) {
 

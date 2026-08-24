@@ -502,3 +502,50 @@ button {
     max-width: 320px;
     margin-bottom: 16px;
 }
+
+.req-table {
+    margin: 20px auto;
+    border-collapse: collapse;
+    background: rgba(10, 18, 35, 0.9);
+}
+
+.req-table th,
+.req-table td {
+    border: 1px solid #263b66;
+    padding: 10px 16px;
+    color: #dbeafe;
+    text-align: left;
+}
+
+.req-table th {
+    color: #00bfff;
+}
+
+.seo-lead {
+    color: #8fa3c8;
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+.cta-button {
+    display: inline-block;
+    background: #0066ff;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 10px;
+    padding: 14px 26px;
+    box-shadow: 0 0 18px rgba(0, 102, 255, 0.4);
+}
+
+.seo-links {
+    list-style: none;
+    columns: 2;
+    max-width: 640px;
+    margin: 12px auto;
+    padding: 0;
+}
+
+.seo-links a {
+    color: #00bfff;
+}

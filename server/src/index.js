@@ -11,6 +11,7 @@ const adminRoutes = require("./routes/admin.js");
 const oauthRoutes = require("./routes/oauth.js");
 const giveawaysRoutes = require("./routes/giveaways.js");
 const modsRoutes = require("./routes/mods.js");
+const seoRoutes = require("./routes/seo.js");
 
 const app = express();
 app.use(express.json());
@@ -30,6 +31,8 @@ app.use("/api/rigs", rigsRoutes);
 app.use("/api/admin", adminRoutes.router);
 app.use("/api/giveaways", giveawaysRoutes);
 app.use("/api/mods", modsRoutes);
+
+app.use(seoRoutes.router);
 
 app.use("/admin", express.static(path.join(__dirname, "..", "public"), { index: "admin.html" }));
 app.use(express.static(path.join(__dirname, "..", "..")));

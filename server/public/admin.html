@@ -8,6 +8,11 @@
         body { font-family: Arial, sans-serif; background: #080b14; color: #e2e8f0; margin: 0; padding: 30px; }
         h1 { color: #00bfff; }
         .card { background: rgba(10,18,35,.9); border: 1px solid #263b66; border-radius: 12px; padding: 20px; margin-bottom: 20px; max-width: 860px; }
+        .tab-btn.active { border-color: #00bfff; }
+        .mod-list li { margin-bottom: 6px; }
+        textarea { background: #111827; color: white; border: 1px solid #263b66; border-radius: 6px; }
+        select { background: #111827; color: white; border: 1px solid #263b66; border-radius: 6px; padding: 6px; }
+        h3 { color: #8fa3c8; margin-bottom: 4px; }
         table { border-collapse: collapse; width: 100%; }
         td { padding: 6px 10px; vertical-align: top; }
         td:first-child { color: #8fa3c8; width: 160px; }
@@ -26,14 +31,19 @@
 </head>
 <body>
     <div id="keybox">
-        <h1>GameHub Draft Review</h1>
+        <h1>GameHub Admin</h1>
+        <p>
+            <button class="save tab-btn" id="tabDrafts" onclick="showTab('drafts')">Draft review</button>
+            <button class="save tab-btn" id="tabMods" onclick="showTab('mods')">Mods manager</button>
+        </p>
         <p>Enter the admin key (ADMIN_KEY in server/.env):</p>
         <input id="keyinput" type="password" placeholder="admin key">
-        <button class="save" onclick="loadDrafts()">Unlock</button>
+        <button class="save" onclick="unlockAll()">Unlock</button>
         <p id="keymsg" class="err"></p>
         <p><a href="/">Back to GameHub</a></p>
     </div>
     <div id="content"></div>
+    <div id="modsBox" style="display:none"></div>
 
     <script>
         var KEY = sessionStorage.getItem("gh-admin-key") || "";
@@ -46,6 +56,137 @@
             var d = document.createElement("div");
             d.textContent = s == null ? "" : String(s);
             return d.innerHTML;
+        }
+
+        function unlockAll() {
+            KEY = document.getElementById("keyinput").value.trim() || KEY;
+            sessionStorage.setItem("gh-admin-key", KEY);
+            loadDrafts();
+            loadModsManager();
+        }
+
+        function showTab(which) {
+            document.getElementById("content").style.display = which === "drafts" ? "block" : "none";
+            document.getElementById("modsBox").style.display = which === "mods" ? "block" : "none";
+        }
+
+        function modFormRow(label, id, type, placeholder) {
+            return "<tr><td>" + label + "</td><td>" +
+                "<input id='" + id + "' type='" + (type || "text") + "' placeholder='" +
+                esc(placeholder || "") + "'></td></tr>";
+        }
+
+        function renderModsManager(gameTitles, mods) {
+            var box = document.getElementById("modsBox");
+            var html = "<div class='card'><h2>Add or update a mod</h2><table>" +
+                "<tr><td>Game</td><td><select id='modGame'>" +
+                gameTitles.map(function (t) {
+                    return "<option value='" + esc(t) + "'>" + esc(t) + "</option>";
+                }).join("") +
+                "</select></td></tr>" +
+                modFormRow("Mod name", "modName") +
+                modFormRow("Author", "modAuthor") +
+                modFormRow("Version", "modVersion") +
+                modFormRow("URL", "modUrl", "text", "https://...") +
+                "</table><p><textarea id='modDesc' rows='3' cols='60' placeholder='Description'></textarea></p>" +
+                "<table>" +
+                modFormRow("Extra RAM (GB)", "modRamAdd", "number", "0") +
+                modFormRow("CPU multiplier", "modCpuMult", "number", "1.0") +
+                modFormRow("GPU multiplier", "modGpuMult", "number", "1.0") +
+                modFormRow("FPS multiplier", "modFpsMult", "number", "1.0") +
+                "</table><h3>Safety</h3><table>" +
+                "<tr><td>VirusTotal status</td><td><select id='modVt'>" +
+                ["pending", "clean", "flagged"].map(function (s) {
+                    return "<option>" + s + "</option>";
+                }).join("") +
+                "</select></td></tr>" +
+                modFormRow("VT report URL", "modVtUrl", "text", "https://virustotal.com/...") +
+                modFormRow("SHA-256 checksum", "modSha", "text", "64 hex characters") +
+                modFormRow("File size (MB)", "modSize", "number", "1500") +
+                "</table>" +
+                "<button class='approve' onclick='submitMod()'>Save mod</button>" +
+                "<p class='result' id='modResult'></p></div>";
+
+            html += "<div class='card'><h2>Existing mods (" + mods.length + ")</h2>";
+            if (!mods.length) {
+                html += "<p class='muted'>None yet.</p>";
+            } else {
+                html += "<ul class='mod-list'>" + mods.map(function (m) {
+                    return "<li><strong>" + esc(m.name) + "</strong> <span class='muted'>for " +
+                        esc(m.gameTitle) + " | vt: " + esc(m.vtStatus) + "</span> " +
+                        "<button class='save' onclick='deleteMod(" + Number(m.id) + ")'>Delete</button></li>";
+                }).join("") + "</ul>";
+            }
+            html += "</div>";
+
+            box.innerHTML = html;
+        }
+
+        function numVal(id, fallback) {
+            var v = parseFloat(document.getElementById(id).value);
+            return isNaN(v) ? fallback : v;
+        }
+
+        function submitMod() {
+            var resBox = document.getElementById("modResult");
+            resBox.className = "";
+            resBox.textContent = "Saving...";
+            fetch("/api/mods", {
+                method: "POST",
+                headers: headers(),
+                body: JSON.stringify({
+                    gameTitle: document.getElementById("modGame").value,
+                    name: document.getElementById("modName").value.trim(),
+                    author: document.getElementById("modAuthor").value.trim() || null,
+                    version: document.getElementById("modVersion").value.trim() || null,
+                    url: document.getElementById("modUrl").value.trim() || null,
+                    description: document.getElementById("modDesc").value.trim() || null,
+                    ramAddGb: Math.max(0, Math.round(numVal("modRamAdd", 0))),
+                    cpuMultiplier: numVal("modCpuMult", 1),
+                    gpuMultiplier: numVal("modGpuMult", 1),
+                    fpsMultiplier: numVal("modFpsMult", 1),
+                    vtStatus: document.getElementById("modVt").value,
+                    vtReportUrl: document.getElementById("modVtUrl").value.trim() || null,
+                    sha256Checksum: document.getElementById("modSha").value.trim() || null,
+                    fileSizeMb: numVal("modSize", 0) || null
+                })
+            })
+                .then(function (r) { return r.json().then(function (j) { return { status: r.status, body: j }; }); })
+                .then(function (out) {
+                    if (out.status >= 400) {
+                        resBox.className = "err";
+                        resBox.textContent = (out.body.errors || [out.body.error || "Failed"]).join(" | ");
+                        return;
+                    }
+                    resBox.className = "ok";
+                    resBox.textContent = "Saved: " + out.body.mod.name;
+                    loadModsManager();
+                })
+                .catch(function (e) {
+                    resBox.className = "err";
+                    resBox.textContent = e.message;
+                });
+        }
+
+        function deleteMod(id) {
+            if (!confirm("Delete this mod?")) return;
+            fetch("/api/mods/" + id, { method: "DELETE", headers: headers() })
+                .then(function () { return loadModsManager(); });
+        }
+
+        function loadModsManager() {
+            Promise.all([
+                fetch("/api/games").then(function (r) { return r.json(); }),
+                fetch("/api/mods").then(function (r) { return r.json(); })
+            ])
+                .then(function (out) {
+                    var titles = (out[0].games || []).map(function (g) { return g.title; });
+                    renderModsManager(titles, out[1].mods || []);
+                })
+                .catch(function (e) {
+                    document.getElementById("keymsg").textContent =
+                        "Mods manager needs the API: " + e.message;
+                });
         }
 
         function loadDrafts() {
@@ -162,8 +303,9 @@
 
         if (KEY) {
             document.getElementById("keyinput").value = KEY;
-            loadDrafts();
+            unlockAll();
         }
     </script>
 </body>
 </html>
+

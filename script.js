@@ -55,25 +55,66 @@ function renderGameCards() {
     });
 }
 
-renderGameOptions();
-renderGameCards();
+async function loadGamesFromApi() {
+    try {
+        const base = window.GAMEHUB_API_URL || "";
+        const res = await fetch(base + "/api/games", {
+            headers: { Accept: "application/json" }
+        });
+        if (!res.ok) return;
+        const payload = await res.json();
+        const list = Array.isArray(payload) ? payload : payload.games;
+        if (!Array.isArray(list) || !list.length) return;
 
-const gameCards = document.querySelectorAll(".game-card");
+        Object.keys(games).forEach(function (key) { delete games[key]; });
 
-document.getElementById("gameSearch").addEventListener("input", function () {
-    const searchText = this.value.toLowerCase();
+        list.forEach(function (g) {
+            if (!g || !g.title || typeof g.recCpu !== "number") return;
+            games[g.title] = {
+                rating: g.rating || 4,
+                compatibility: g.compatibility || "medium",
+                minRam: g.minRam,
+                recRam: g.recRam,
+                minCpu: g.minCpu,
+                minGpu: g.minGpu,
+                recCpu: g.recCpu,
+                recGpu: g.recGpu,
+                baseFps: g.baseFps || 50,
+                imageUrl: g.imageUrl || null
+            };
+        });
+    } catch (e) {
+        return;
+    }
+}
 
-    gameCards.forEach(function (card) {
-        const gameName =
-            card.querySelector("h3").textContent.toLowerCase();
+async function init() {
+    await loadGamesFromApi();
 
-        if (gameName.includes(searchText)) {
-            card.style.display = "block";
-        } else {
-            card.style.display = "none";
-        }
+    renderGameOptions();
+    renderGameCards();
+
+    const gameCards = document.querySelectorAll(".game-card");
+
+    document.getElementById("gameSearch").addEventListener("input", function () {
+        const searchText = this.value.toLowerCase();
+
+        gameCards.forEach(function (card) {
+            const gameName =
+                card.querySelector("h3").textContent.toLowerCase();
+
+            if (gameName.includes(searchText)) {
+                card.style.display = "block";
+            } else {
+                card.style.display = "none";
+            }
+        });
     });
-});
+
+    renderRigResults();
+}
+
+init();
 
 document.getElementById("navCheckPC").addEventListener("click", function () {
     document.getElementById("checker")
@@ -297,8 +338,6 @@ function renderRigResults() {
 function savedRigRam(rig) {
     return rig && rig.ram ? rig.ram : "?";
 }
-
-renderRigResults();
 
 gamesGrid.addEventListener("click", function (event) {
 

@@ -1,0 +1,45 @@
+{
+    "steamAppId": 271590,
+    "title": "Grand Theft Auto V Legacy",
+    "status": "draft",
+    "importedAt": "2026-08-24T12:09:06.517Z",
+    "source": {
+        "store": "steam",
+        "appId": 271590
+    },
+    "rating": 4,
+    "compatibility": "medium",
+    "minRam": 4,
+    "recRam": 8,
+    "minCpu": null,
+    "minGpu": null,
+    "recCpu": 26,
+    "recGpu": 13,
+    "baseFps": 56,
+    "fpsSource": "heuristic",
+    "imageUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/271590/header.jpg?t=1765387725",
+    "price": null,
+    "isFree": false,
+    "parsedNames": {
+        "minCpu": {
+            "name": null,
+            "confidence": "none"
+        },
+        "minGpu": {
+            "name": null,
+            "confidence": "none"
+        },
+        "recCpu": {
+            "name": "Core i5-3470",
+            "confidence": "exact"
+        },
+        "recGpu": {
+            "name": "GTX 660",
+            "confidence": "exact"
+        }
+    },
+    "warnings": [
+        "Minimum CPU not recognized — manual entry needed",
+        "Minimum GPU not recognized — manual entry needed"
+    ]
+}
